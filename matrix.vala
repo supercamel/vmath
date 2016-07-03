@@ -30,6 +30,16 @@ public class Matrix : Object
             cells.add(v);
     }
 
+    public int n_rows()
+    {
+        return max_y;
+    }
+
+    public int n_cols()
+    {
+        return max_x;
+    }
+    
     public void print()
     {
         for(int row = 0; row < max_y; row++)
