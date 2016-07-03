@@ -1,0 +1,4 @@
+export LD_LIBRARY_PATH=./
+export GI_TYPELIB_PATH=./
+./tests/vector.js
+./tests/matrix.js
