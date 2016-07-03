@@ -111,15 +111,15 @@ public class Quaternion
 
     public Vector to_euler()
     {
-        var ret = Vector.three_d(0, 0, 0);
+        var ret = new Vector.three_d(0, 0, 0);
         double sqw = w*w;
         double sqx = x*x;
         double sqy = y*y;
         double sqz = z*z;
 
-        ret.set_x(atan2((2.0*(_x*_y+_z*_w)),(sqx-sqy-sqz+sqw)));
-        ret.set_y(asin((-2.0*(_x*_z-_y*_w))/(sqx+sqy+sqz+sqw)));
-        ret.set_z(atan2((2.0*(_y*_z+_x*_w)),(-sqx-sqy+sqz+sqw)));
+        ret.set_x(atan2((2.0*(x*y+z*w)),(sqx-sqy-sqz+sqw)));
+        ret.set_y(asin((-2.0*(x*z-y*w))/(sqx+sqy+sqz+sqw)));
+        ret.set_z(atan2((2.0*(y*z+x*w)),(-sqx-sqy+sqz+sqw)));
 
         return ret;
     }
@@ -164,12 +164,12 @@ public class Quaternion
         x = sqrt(double.max( 0, 1 + m.get_cell(0,0) - m.get_cell(1,1) - m.get_cell(2,2))) / 2.0f;
         y = sqrt(double.max( 0, 1 - m.get_cell(0,0) + m.get_cell(1,1) - m.get_cell(2,2))) / 2.0f;
         z = sqrt(double.max( 0, 1 - m.get_cell(0,0) - m.get_cell(1,1) + m.get_cell(2,2))) / 2.0f;
-        x = copysign_zero(x, m.get_cell(2,1) - m.get_cell(1,2));
-        y = copysign_zero(y, m.get_cell(0,2) - m.get_cell(2,0));
-        z = copysign_zero(z, m.get_cell(1,0) - m.get_cell(0,1));
+        x = copysignzero(x, m.get_cell(2,1) - m.get_cell(1,2));
+        y = copysignzero(y, m.get_cell(0,2) - m.get_cell(2,0));
+        z = copysignzero(z, m.get_cell(1,0) - m.get_cell(0,1));
     }
 
-    private double copysign_zero(double x, double y)
+    private double copysignzero(double x, double y)
     {
         double precision = 0.00001;
         if((y < precision) && (y > -precision))
@@ -180,17 +180,17 @@ public class Quaternion
     public Matrix to_matrix()
     {
         var ret = new Matrix(3, 3);
-        ret.set_cell(0, 0, 1-(2*(_y*_y))-(2*(_z*_z)));
-        ret.set_cell(0, 1, (2*_x*_y)-(2*_w*_z));
-        ret.set_cell(0, 2, (2*_x*_z)+(2*_w*_y));
+        ret.set_cell(0, 0, 1-(2*(y*y))-(2*(z*z)));
+        ret.set_cell(0, 1, (2*x*y)-(2*w*z));
+        ret.set_cell(0, 2, (2*x*z)+(2*w*y));
 
-        ret.set_cell(1, 0, (2*_x*_y)+(2*_w*_z));
-        ret.set_cell(1, 1, 1-(2*(_x*_x))-(2*(_z*_z)));
-        ret.set_cell(1, 2, (2*(_y*_z))-(2*(_w*_x)));
+        ret.set_cell(1, 0, (2*x*y)+(2*w*z));
+        ret.set_cell(1, 1, 1-(2*(x*x))-(2*(z*z)));
+        ret.set_cell(1, 2, (2*(y*z))-(2*(w*x)));
 
-        ret.set_cell(2, 0, (2*(_x*_z))-(2*_w*_y));
-        ret.set_cell(2, 1, (2*_y*_z)+(2*_w*_x));
-        ret.set_cell(2, 2, 1-(2*(_x*_x))-(2*(_y*_y)));
+        ret.set_cell(2, 0, (2*(x*z))-(2*w*y));
+        ret.set_cell(2, 1, (2*y*z)+(2*w*x));
+        ret.set_cell(2, 2, 1-(2*(x*x))-(2*(y*y)));
         return ret;
     }
 
@@ -204,7 +204,7 @@ public class Quaternion
 
     public Vector to_angular_velocity(double dt)
     {
-        var ret = Vector.three_d(0, 0, 0);
+        var ret = new Vector.three_d(0, 0, 0);
         if(dt == 0)
             return ret;
 
@@ -217,11 +217,11 @@ public class Quaternion
         return ret;
     }
 
-    Quaternion slerp(Quaternion b, float pc) const
+    Quaternion slerp(Quaternion b, float pc)
     {
         var qm = new Quaternion();
 
-        real_t cosHalfTheta = w * b.w + x * b.x + y * b.y + z * b.z;
+        double cosHalfTheta = w * b.w + x * b.x + y * b.y + z * b.z;
         if (cosHalfTheta < 0)
         {
             b.w = -b.w;
@@ -233,7 +233,7 @@ public class Quaternion
 
         if(fabs(cosHalfTheta) >= 1.0)
         {
-            qm = *this;
+            qm = this;
             return qm;
         }
 
