@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: mapness
+Description: a Vala math library
+Version: 0.1
+Requires: gee-0.8
+Requires.private: gee-0.8
+Libs: -L${libdir} -lvmath-0.1
+Cflags: -I${includedir}/

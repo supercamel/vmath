@@ -1,6 +1,5 @@
 
 using Math;
-using Gee;
 
 namespace vmath
 {
